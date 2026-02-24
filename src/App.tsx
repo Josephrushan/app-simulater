@@ -99,6 +99,8 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
     const iframe = iframeRef.current;
     if (iframe) {
       // Prevent focus on iframe
@@ -154,6 +156,11 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     setRefreshKey(prev => prev + 1);
   };
 
+  // Calculate padding based on display dimensions
+  const paddingX = Math.round(displayDimensions.width * 0.08);
+  const paddingTopY = Math.round(displayDimensions.height * 0.08);
+  const paddingBottomY = Math.round(displayDimensions.height * 0.04);
+
   return (
     <div className="flex flex-col items-center gap-2">
       <motion.div
@@ -182,10 +189,10 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         <div 
           className="absolute overflow-hidden bg-white rounded-[2rem]"
           style={{
-            top: paddingY,
+            top: paddingTopY,
             left: paddingX,
             right: paddingX,
-            bottom: paddingY,
+            bottom: paddingBottomY,
             zIndex: 10
           }}
         >
@@ -275,7 +282,7 @@ export default function App() {
           <nav className="space-y-1">
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
-              const isActive = activeFeature.id === feature.id;
+              const isActive = activeFeature && activeFeature.id === feature.id;
               return (
                 <button
                   key={feature.id}
