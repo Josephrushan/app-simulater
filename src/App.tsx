@@ -30,7 +30,7 @@ const HOME_URL = "https://www.educater.co.za";
 const PRINCIPALS_URL = "https://principals-educater.vercel.app";
 const STUDENTS_URL = "https://students-app-psi.vercel.app";
 
-const MOCKUP_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/newphone%20sim.png?alt=media&token=3e4de56d-95a5-4a24-b21f-a56d1ce9b5a4";
+const MOCKUP_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/delete%20all%20other%20phones.png?alt=media&token=3655f128-4200-4278-9374-c878983d743b";
 const LOGO_ICON_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/icon.png?alt=media&token=0963de99-0e33-4484-8bc9-1d14c3adb1ce";
 const LOGO_FULL_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/Educatorwhite.png?alt=media&token=c19f45df-b3d6-41a1-be5f-7432b9bba889";
 
@@ -165,7 +165,8 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
             left: paddingX,
             right: paddingX,
             bottom: paddingY,
-            zIndex: 10
+            zIndex: 10,
+            pointerEvents: 'auto'
           }}
         >
           <iframe 
@@ -178,6 +179,7 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
               transform: 'scale(0.6666)',
               transformOrigin: 'top left',
               border: 'none',
+              cursor: 'none',
             }}
             title={`Educater App - ${label}`}
             referrerPolicy="no-referrer"
@@ -214,20 +216,31 @@ const CustomCursor = () => {
   }, []);
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] mix-blend-difference bg-white"
-      initial={{ opacity: 0 }}
-      animate={{
-        x: position.x - 16,
-        y: position.y - 16,
-        scale: isPointer ? 1.5 : 1,
-        opacity: 1,
-      }}
-      transition={{ 
-        opacity: { duration: 0.2 },
-        default: { type: 'spring', damping: 25, stiffness: 250, mass: 0.5 }
-      }}
-    />
+    <>
+      {/* Invisible overlay to ensure cursor is always visible */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-[100000]"
+        style={{ pointerEvents: 'none' }}
+      />
+      <motion.div
+        className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[999999] mix-blend-difference bg-white"
+        initial={{ opacity: 0 }}
+        animate={{
+          x: position.x - 16,
+          y: position.y - 16,
+          scale: isPointer ? 1.5 : 1,
+          opacity: 1,
+        }}
+        transition={{ 
+          opacity: { duration: 0.2 },
+          default: { type: 'spring', damping: 25, stiffness: 250, mass: 0.5 }
+        }}
+        style={{ 
+          pointerEvents: 'none',
+          willChange: 'transform'
+        }}
+      />
+    </>
   );
 };
 
