@@ -30,7 +30,7 @@ const HOME_URL = "https://www.educater.co.za";
 const PRINCIPALS_URL = "https://principals-educater.vercel.app";
 const STUDENTS_URL = "https://students-app-psi.vercel.app";
 
-const MOCKUP_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/delete%20all%20other%20phones.png?alt=media&token=3655f128-4200-4278-9374-c878983d743b";
+const MOCKUP_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/new%20phone.png?alt=media&token=ee83088e-8768-492f-ac26-c6aa4948c1f5";
 const LOGO_ICON_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/icon.png?alt=media&token=0963de99-0e33-4484-8bc9-1d14c3adb1ce";
 const LOGO_FULL_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/Educatorwhite.png?alt=media&token=c19f45df-b3d6-41a1-be5f-7432b9bba889";
 
@@ -68,7 +68,6 @@ const FEATURES = [
 ];
 
 const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, label: string, url: string, icon: React.ElementType }) => {
-  const [refreshKey, setRefreshKey] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const displayWidth = 260;
   const displayHeight = 560;
@@ -124,11 +123,6 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     }
   }, []);
 
-  const handleRefresh = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setRefreshKey(prev => prev + 1);
-  };
-
   // Padding as percentages (original Google AI dimensions)
   const paddingX = "3.5%";
   const paddingY = "8.5%";
@@ -140,7 +134,7 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay, ease: "easeOut" }}
         className="relative mx-auto origin-center simulation-container group/phone"
-        style={{ width: displayWidth, height: displayHeight }}
+        style={{ width: displayWidth, height: displayHeight, transform: 'translate(-6px, -16px)' }}
       >
         <img 
           src={MOCKUP_URL} 
@@ -149,15 +143,6 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
           referrerPolicy="no-referrer"
         />
         
-        {/* Refresh Button Overlay */}
-        <button 
-          onClick={handleRefresh}
-          className="absolute top-4 right-4 z-30 p-2 bg-black/50 backdrop-blur-md rounded-full opacity-0 group-hover/phone:opacity-100 transition-opacity hover:bg-black/70 text-white"
-          title="Refresh Simulation"
-        >
-          <RefreshCcw className="w-4 h-4" />
-        </button>
-
         <div 
           className="absolute overflow-hidden bg-white rounded-[2rem]"
           style={{
@@ -171,7 +156,6 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         >
           <iframe 
             ref={iframeRef}
-            key={refreshKey}
             src={url} 
             style={{
               width: '150%',
