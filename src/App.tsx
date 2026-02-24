@@ -156,10 +156,9 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     setRefreshKey(prev => prev + 1);
   };
 
-  // Calculate padding based on display dimensions
-  const paddingX = Math.round(displayDimensions.width * 0.08);
-  const paddingTopY = Math.round(displayDimensions.height * 0.08);
-  const paddingBottomY = Math.round(displayDimensions.height * 0.04);
+  // Fixed padding to maintain aspect ratio
+  const paddingX = 8;
+  const paddingY = 14;
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -189,10 +188,10 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         <div 
           className="absolute overflow-hidden bg-white rounded-[2rem]"
           style={{
-            top: paddingTopY,
+            top: paddingY,
             left: paddingX,
             right: paddingX,
-            bottom: paddingBottomY,
+            bottom: paddingY,
             zIndex: 10
           }}
         >
