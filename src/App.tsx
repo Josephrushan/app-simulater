@@ -67,17 +67,38 @@ const FEATURES = [
   { id: 'privacy', label: 'Privacy', icon: ShieldCheck, tip: 'Learn how the app collects, stores, and protects your personal data to ensure your information remains secure. This section explains who has access to your details, upholding your right to know how your digital footprint is being managed.' },
 ];
 
-const displayWidth = 260; 
-const displayHeight = 560;
-
-const paddingX = "3.5%";
-const paddingY = "8.5%";
-
 const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, label: string, url: string, icon: React.ElementType }) => {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [displayDimensions, setDisplayDimensions] = useState({ width: 260, height: 560 });
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      // Phone: < 640px, Tablet: 640px-1024px, Desktop: > 1024px
+      let newWidth, newHeight;
+      
+      if (width < 640) {
+        // Mobile phone
+        newWidth = 180;
+        newHeight = 390;
+      } else if (width < 1024) {
+        // Tablet
+        newWidth = 220;
+        newHeight = 480;
+      } else {
+        // Desktop
+        newWidth = 260;
+        newHeight = 560;
+      }
+      
+      setDisplayDimensions({ width: newWidth, height: newHeight });
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
     const iframe = iframeRef.current;
     if (iframe) {
       // Prevent focus on iframe
@@ -140,7 +161,7 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay, ease: "easeOut" }}
         className="relative mx-auto origin-center simulation-container group/phone"
-        style={{ width: displayWidth, height: displayHeight }}
+        style={{ width: displayDimensions.width, height: displayDimensions.height }}
       >
         <img 
           src={MOCKUP_URL} 
@@ -239,7 +260,7 @@ export default function App() {
       <CustomCursor />
 
       {/* Sidebar */}
-      <aside className="w-72 h-full bg-[#021b2b] border-r border-white/5 flex flex-col p-8 z-50">
+      <aside className="hidden sm:flex w-48 md:w-64 lg:w-72 h-full bg-[#021b2b] border-r border-white/5 flex-col p-4 md:p-8 z-50">
         <div className="mb-10">
           <img 
             src={LOGO_FULL_URL} 
@@ -304,10 +325,10 @@ export default function App() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-64 p-5 bg-[#021b2b]/80 border border-white/10 rounded-xl backdrop-blur-md z-40"
+              className="hidden md:block absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-48 md:w-64 p-4 md:p-5 bg-[#021b2b]/80 border border-white/10 rounded-xl backdrop-blur-md z-40"
             >
-              <span className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-bold mb-2 block">Tip:</span>
-              <p className="text-[11px] text-white/70 leading-relaxed font-medium">
+              <span className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-white/50 font-bold mb-2 block">Tip:</span>
+              <p className="text-[10px] md:text-[11px] text-white/70 leading-relaxed font-medium">
                 {activeFeature.tip}
               </p>
             </motion.div>
@@ -315,7 +336,7 @@ export default function App() {
         )}
 
         {/* Phones Container */}
-        <div className="flex items-center gap-16 lg:gap-24 ml-32">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 xl:gap-24 ml-0 lg:ml-32">
           <PhoneFrame 
             delay={0.1} 
             label="Educator"
