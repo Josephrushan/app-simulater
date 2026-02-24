@@ -69,36 +69,9 @@ const FEATURES = [
 
 const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, label: string, url: string, icon: React.ElementType }) => {
   const [refreshKey, setRefreshKey] = useState(0);
-  const [displayDimensions, setDisplayDimensions] = useState({ width: 260, height: 560 });
   const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      // Phone: < 640px, Tablet: 640px-1024px, Desktop: > 1024px
-      let newWidth, newHeight;
-      
-      if (width < 640) {
-        // Mobile phone
-        newWidth = 180;
-        newHeight = 390;
-      } else if (width < 1024) {
-        // Tablet
-        newWidth = 220;
-        newHeight = 480;
-      } else {
-        // Desktop
-        newWidth = 260;
-        newHeight = 560;
-      }
-      
-      setDisplayDimensions({ width: newWidth, height: newHeight });
-    };
-    
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const displayWidth = 260;
+  const displayHeight = 560;
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -156,9 +129,9 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     setRefreshKey(prev => prev + 1);
   };
 
-  // Fixed padding to maintain aspect ratio
-  const paddingX = 8;
-  const paddingY = 14;
+  // Padding as percentages (original Google AI dimensions)
+  const paddingX = "3.5%";
+  const paddingY = "8.5%";
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -167,7 +140,7 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay, ease: "easeOut" }}
         className="relative mx-auto origin-center simulation-container group/phone"
-        style={{ width: displayDimensions.width, height: displayDimensions.height }}
+        style={{ width: displayWidth, height: displayHeight }}
       >
         <img 
           src={MOCKUP_URL} 
