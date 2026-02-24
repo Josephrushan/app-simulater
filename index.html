@@ -2,10 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape" />
+    <meta name="screen-orientation" content="portrait-primary" />
     <title>Educater Lab</title>
     <link rel="icon" type="image/webp" href="https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/appicon2_200x200.webp?alt=media&token=80ff6388-e52e-48c1-8f35-17acf25f8efc" />
     <link rel="apple-touch-icon" href="https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/appicon2_200x200.webp?alt=media&token=80ff6388-e52e-48c1-8f35-17acf25f8efc" />
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: block;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+      }
+      @media (orientation: portrait) {
+        body::before {
+          content: "Please rotate your device to landscape";
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #011827;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          z-index: 10000;
+        }
+        #root {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
