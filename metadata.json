@@ -1,0 +1,5 @@
+{
+  "name": "Educater App Simulator",
+  "description": "A multi-device simulator for the Educater PWA platform.",
+  "requestFramePermissions": []
+}
