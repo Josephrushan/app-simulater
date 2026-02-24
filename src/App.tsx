@@ -200,7 +200,6 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isPointer, setIsPointer] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -208,9 +207,6 @@ const CustomCursor = () => {
       
       const target = e.target as HTMLElement;
       setIsPointer(window.getComputedStyle(target).cursor === 'pointer');
-      
-      const isOverSimulation = !!target.closest('.simulation-container');
-      setIsHidden(isOverSimulation);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -225,7 +221,7 @@ const CustomCursor = () => {
         x: position.x - 16,
         y: position.y - 16,
         scale: isPointer ? 1.5 : 1,
-        opacity: isHidden ? 0 : 1,
+        opacity: 1,
       }}
       transition={{ 
         opacity: { duration: 0.2 },
