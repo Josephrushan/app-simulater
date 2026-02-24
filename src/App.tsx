@@ -232,7 +232,7 @@ const CustomCursor = () => {
 };
 
 export default function App() {
-  const [activeFeature, setActiveFeature] = useState(FEATURES[0]); // Default to Homework
+  const [activeFeature, setActiveFeature] = useState<typeof FEATURES[0] | null>(null);
 
   return (
     <div className="h-screen w-screen bg-[#011827] flex overflow-hidden cursor-none font-sans text-white">
@@ -297,20 +297,22 @@ export default function App() {
         </div>
 
         {/* Tip Box */}
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={activeFeature.id}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-64 p-5 bg-[#021b2b]/80 border border-white/10 rounded-xl backdrop-blur-md z-40"
-          >
-            <span className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-bold mb-2 block">Tip:</span>
-            <p className="text-[11px] text-white/70 leading-relaxed font-medium">
-              {activeFeature.tip}
-            </p>
-          </motion.div>
-        </AnimatePresence>
+        {activeFeature && (
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeFeature.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-64 p-5 bg-[#021b2b]/80 border border-white/10 rounded-xl backdrop-blur-md z-40"
+            >
+              <span className="text-[9px] uppercase tracking-[0.2em] text-white/50 font-bold mb-2 block">Tip:</span>
+              <p className="text-[11px] text-white/70 leading-relaxed font-medium">
+                {activeFeature.tip}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        )}
 
         {/* Phones Container */}
         <div className="flex items-center gap-16 lg:gap-24 ml-32">
