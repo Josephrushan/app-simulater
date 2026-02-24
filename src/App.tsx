@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowLeft, 
@@ -37,8 +37,24 @@ const LOGO_FULL_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e
 const FEATURES = [
   { id: 'homework', label: 'Homework', icon: BookOpen, tip: 'Teachers post assignments and deadlines here for students to submit work and parents to track progress. Check this section daily to manage your workload effectively and ensure no due dates are missed during the busy school week.' },
   { id: 'calendar', label: 'Calendar', icon: Calendar, tip: 'View the entire school year, including holidays and field trips, in one color-coded space. This feature allows everyone to plan ahead and stay organized, ensuring that important dates and upcoming events are never overlooked or forgotten.' },
-  { id: 'chat', label: 'Chat', icon: MessageSquare, tip: 'This section provides instant class-wide announcements and reminders directly from teachers. By using this broadcast tool, you can skip messy email chains and receive essential updates and timely information in a single, convenient conversation stream.' },
-  { id: 'inbox', label: 'Inbox', icon: Mail, tip: 'Use this area for private, one-on-one messaging between teachers, parents, and students. It is the ideal space for discussing confidential matters or specific questions that do not require the attention of the entire class or group.' },
+  { 
+    id: 'chat', 
+    label: 'Chat', 
+    icon: MessageSquare, 
+    tip: 'This section provides instant class-wide announcements and reminders directly from teachers. By using this broadcast tool, you can skip messy email chains and receive essential updates and timely information in a single, convenient conversation stream.',
+    onClick: () => {
+      console.log('Chat feature clicked'); // Simplified logic
+    }
+  },
+  {
+    id: 'inbox',
+    label: 'Inbox',
+    icon: Mail,
+    tip: 'This area is now view-only for private, one-on-one messaging. Typing functionality is disabled to ensure a focused and distraction-free experience.',
+    onClick: () => {
+      console.log('Inbox feature clicked'); // View-only logic
+    }
+  },
   { id: 'journal', label: 'Journal', icon: Camera, tip: 'Students can upload and browse school photos to create a digital living yearbook. This camera-based feature allows you to capture important memories throughout the year, making it easy to relive special moments and see who was involved.' },
   { id: 'alerts', label: 'Alerts', icon: Bell, tip: 'This section delivers urgent notifications regarding attendance, health, or behavior updates that require immediate awareness. These alerts are not casual messages; they demand quick action or attention from parents and students to ensure everyone stays informed.' },
   { id: 'quizzes', label: 'Quizzes', icon: ClipboardList, tip: 'Students can take online tests here to receive instant scores and feedback on their performance. This digital assessment tool is significantly faster than waiting for paper grading, and it allows for retakes whenever the teacher enables that option.' },
@@ -51,15 +67,66 @@ const FEATURES = [
   { id: 'privacy', label: 'Privacy', icon: ShieldCheck, tip: 'Learn how the app collects, stores, and protects your personal data to ensure your information remains secure. This section explains who has access to your details, upholding your right to know how your digital footprint is being managed.' },
 ];
 
+const displayWidth = 260; 
+const displayHeight = 560;
+
+const paddingX = "3.5%";
+const paddingY = "8.5%";
+
 const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, label: string, url: string, icon: React.ElementType }) => {
   const [refreshKey, setRefreshKey] = useState(0);
-  
-  // Adjusted dimensions for a longer, more realistic aspect ratio
-  const displayWidth = 260; 
-  const displayHeight = 560;
-  
-  const paddingX = "3.5%";
-  const paddingY = "8.5%"; 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe) {
+      // Prevent focus on iframe
+      const handleFocus = (event: FocusEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        iframe.blur();
+      };
+      
+      // Prevent keyboard interaction
+      const handleKeyDown = (event: KeyboardEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+      };
+      
+      iframe.addEventListener('focus', handleFocus, true);
+      iframe.addEventListener('keydown', handleKeyDown, true);
+      iframe.addEventListener('keyup', handleKeyDown, true);
+      iframe.addEventListener('keypress', handleKeyDown, true);
+      
+      // Prevent focus within iframe content
+      const handleLoad = () => {
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+          if (iframeDoc) {
+            const inputs = iframeDoc.querySelectorAll('input, textarea');
+            inputs.forEach(el => {
+              el.addEventListener('focus', (e) => {
+                e.preventDefault();
+                (e.target as HTMLElement).blur();
+              }, true);
+            });
+          }
+        } catch(e) {
+          console.log('Cannot access iframe content');
+        }
+      };
+      
+      iframe.addEventListener('load', handleLoad);
+      
+      return () => {
+        iframe.removeEventListener('focus', handleFocus, true);
+        iframe.removeEventListener('keydown', handleKeyDown, true);
+        iframe.removeEventListener('keyup', handleKeyDown, true);
+        iframe.removeEventListener('keypress', handleKeyDown, true);
+        iframe.removeEventListener('load', handleLoad);
+      };
+    }
+  }, []);
 
   const handleRefresh = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -102,6 +169,7 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
           }}
         >
           <iframe 
+            ref={iframeRef}
             key={refreshKey}
             src={url} 
             style={{
@@ -169,47 +237,10 @@ const CustomCursor = () => {
 
 export default function App() {
   const [activeFeature, setActiveFeature] = useState(FEATURES[0]); // Default to Homework
-  const [isTooSmall, setIsTooSmall] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => {
-      const isPortrait = window.innerHeight > window.innerWidth;
-      const isSmall = window.innerWidth < 1024;
-      setIsTooSmall(isPortrait || isSmall);
-    };
-
-    checkSize();
-    window.addEventListener('resize', checkSize);
-    return () => window.removeEventListener('resize', checkSize);
-  }, []);
 
   return (
     <div className="h-screen w-screen bg-[#011827] flex overflow-hidden cursor-none font-sans text-white">
       <CustomCursor />
-
-      {/* Mobile/Small Screen Blocker */}
-      <AnimatePresence>
-        {isTooSmall && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10000] bg-[#011827] flex flex-col items-center justify-center p-8 text-center"
-          >
-            <img 
-              src={LOGO_ICON_URL} 
-              alt="Educater Logo" 
-              className="w-20 h-20 mb-8 opacity-80"
-              referrerPolicy="no-referrer"
-            />
-            <h2 className="text-2xl font-bold mb-4">Desktop Mode Required</h2>
-            <p className="text-white/60 max-w-md">
-              This simulator is designed for Desktop or Tablet Landscape mode only. 
-              Please rotate your device or use a larger screen to continue.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Sidebar */}
       <aside className="w-72 h-full bg-[#021b2b] border-r border-white/5 flex flex-col p-8 z-50">
