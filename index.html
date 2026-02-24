@@ -2,49 +2,88 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape" />
-    <meta name="screen-orientation" content="portrait-primary" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Educater Lab</title>
     <link rel="icon" type="image/webp" href="https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/appicon2_200x200.webp?alt=media&token=80ff6388-e52e-48c1-8f35-17acf25f8efc" />
     <link rel="apple-touch-icon" href="https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/appicon2_200x200.webp?alt=media&token=80ff6388-e52e-48c1-8f35-17acf25f8efc" />
     <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        display: block;
-      }
-      #root {
-        width: 100%;
-        height: 100%;
-      }
-      @media (orientation: portrait) {
+      @media (max-width: 1024px) and (orientation: portrait) {
         body::before {
-          content: "Please rotate your device to landscape";
+          content: "";
           position: fixed;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background: #011827;
-          color: white;
+          background: linear-gradient(135deg, #011827 0%, #021b2b 100%);
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          font-size: 24px;
           z-index: 10000;
+          color: white;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         #root {
-          display: none;
+          filter: blur(10px);
+          pointer-events: none;
         }
       }
     </style>
   </head>
   <body>
+    <div class="portrait-overlay" id="portraitOverlay">
+      <img src="https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/Educatorwhite.png?alt=media&token=c19f45df-b3d6-41a1-be5f-7432b9bba889" alt="Educater" style="height: 60px; margin-bottom: 40px; object-fit: contain;" />
+      <div style="text-align: center; color: white;">
+        <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 16px 0; letter-spacing: -0.5px;">Experience Educater</h1>
+        <p style="font-size: 16px; color: rgba(255,255,255,0.7); margin: 0; line-height: 1.6; max-width: 280px;">
+          Please use <strong>landscape mode</strong> or view on a <strong>tablet or desktop</strong> for the best experience.
+        </p>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const portraitOverlay = document.getElementById('portraitOverlay');
+      const root = document.getElementById('root');
+      
+      function checkOrientation() {
+        const isPortrait = window.innerHeight > window.innerWidth && window.innerWidth < 1025;
+        portraitOverlay.style.display = isPortrait ? 'flex' : 'none';
+        if (!portraitOverlay.style.display || portraitOverlay.style.display === 'none') {
+          root.style.filter = 'none';
+          root.style.pointerEvents = 'auto';
+        } else {
+          root.style.filter = 'blur(10px)';
+          root.style.pointerEvents = 'none';
+        }
+      }
+      
+      window.addEventListener('resize', checkOrientation);
+      window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 100));
+      checkOrientation();
+    </script>
+    <style>
+      #portraitOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #011827 0%, #021b2b 100%);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      body, html {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </body>
 </html>
 
