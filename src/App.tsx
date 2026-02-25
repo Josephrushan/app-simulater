@@ -25,6 +25,9 @@ import {
   GraduationCap,
   RefreshCcw
 } from 'lucide-react';
+import { LanguageSelector } from './LanguageSelector';
+import { translations, type Language } from './translations';
+import VoiceSimulator from './VoiceSimulator';
 
 const HOME_URL = "https://www.educater.co.za";
 const PRINCIPALS_URL = "https://principals-app-five.vercel.app/";
@@ -33,39 +36,6 @@ const STUDENTS_URL = "https://student-app-navy.vercel.app/";
 const MOCKUP_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/new%20phone.png?alt=media&token=ee83088e-8768-492f-ac26-c6aa4948c1f5";
 const LOGO_ICON_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/icon.png?alt=media&token=0963de99-0e33-4484-8bc9-1d14c3adb1ce";
 const LOGO_FULL_URL = "https://firebasestorage.googleapis.com/v0/b/websitey-9f8e4.firebasestorage.app/o/Educatorwhite.png?alt=media&token=c19f45df-b3d6-41a1-be5f-7432b9bba889";
-
-const FEATURES = [
-  { id: 'homework', label: 'Homework', icon: BookOpen, tip: 'Teachers post assignments and deadlines here for students to submit work and parents to track progress. Check this section daily to manage your workload effectively and ensure no due dates are missed during the busy school week.' },
-  { id: 'calendar', label: 'Calendar', icon: Calendar, tip: 'View the entire school year, including holidays and field trips, in one color-coded space. This feature allows everyone to plan ahead and stay organized, ensuring that important dates and upcoming events are never overlooked or forgotten.' },
-  { 
-    id: 'chat', 
-    label: 'Chat', 
-    icon: MessageSquare, 
-    tip: 'This section provides instant class-wide announcements and reminders directly from teachers. By using this broadcast tool, you can skip messy email chains and receive essential updates and timely information in a single, convenient conversation stream.',
-    onClick: () => {
-      console.log('Chat feature clicked'); // Simplified logic
-    }
-  },
-  {
-    id: 'inbox',
-    label: 'Inbox',
-    icon: Mail,
-    tip: 'This area is now view-only for private, one-on-one messaging. Typing functionality is disabled to ensure a focused and distraction-free experience.',
-    onClick: () => {
-      console.log('Inbox feature clicked'); // View-only logic
-    }
-  },
-  { id: 'journal', label: 'Journal', icon: Camera, tip: 'Students can upload and browse school photos to create a digital living yearbook. This camera-based feature allows you to capture important memories throughout the year, making it easy to relive special moments and see who was involved.' },
-  { id: 'alerts', label: 'Alerts', icon: Bell, tip: 'This section delivers urgent notifications regarding attendance, health, or behavior updates that require immediate awareness. These alerts are not casual messages; they demand quick action or attention from parents and students to ensure everyone stays informed.' },
-  { id: 'quizzes', label: 'Quizzes', icon: ClipboardList, tip: 'Students can take online tests here to receive instant scores and feedback on their performance. This digital assessment tool is significantly faster than waiting for paper grading, and it allows for retakes whenever the teacher enables that option.' },
-  { id: 'games', label: 'Learning Games', icon: Gamepad2, tip: 'Access educational games covering subjects like math, science, and history to make studying more engaging. Teachers often assign these activities to help students improve their skills and knowledge through fun, interactive challenges that feel like play.' },
-  { id: 'yearbook', label: 'Yearbook', icon: Image, tip: 'Browse through a digital time capsule featuring class photos, student spotlights, and major school highlights. This feature allows you to flip through memories from past years and smile while remembering the people and events that shaped your experience.' },
-  { id: 'library', label: 'Library', icon: Library, tip: 'This tutoring hub contains study guides, videos, and worksheets uploaded by teachers for easy access. It serves as a searchable, central resource for all learning materials, replacing the need to hunt through various scattered emails or physical handouts.' },
-  { id: 'directory', label: 'Directory', icon: Search, tip: 'Quickly search for the contact information and profiles of classmates, teachers, and school staff. Instead of hunting through long lists or asking around, simply type a name to find the person you need to reach instantly.' },
-  { id: 'profile', label: 'Profile', icon: User, tip: 'Update your name, photo, and contact details to ensure your information remains current. Keeping this section accurate helps others recognize you easily and ensures that teachers and peers have the correct way to reach out when necessary.' },
-  { id: 'conduct', label: 'Code of Conduct', icon: FileText, tip: 'Review all school rules, dress codes, and behavior expectations to understand what is required of every student. Both parents and students should stay informed about these guidelines to ensure they make smart choices and follow campus policies.' },
-  { id: 'privacy', label: 'Privacy', icon: ShieldCheck, tip: 'Learn how the app collects, stores, and protects your personal data to ensure your information remains secure. This section explains who has access to your details, upholding your right to know how your digital footprint is being managed.' },
-];
 
 const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, label: string, url: string, icon: React.ElementType }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -229,11 +199,45 @@ const CustomCursor = () => {
 };
 
 export default function App() {
-  const [activeFeature, setActiveFeature] = useState<typeof FEATURES[0] | null>(null);
+  const [activeFeature, setActiveFeature] = useState<string | null>(null);
+  const [language, setLanguage] = useState<Language>('en');
+
+  const t = translations[language];
+
+  // Create dynamic features array with current translations
+  const FEATURES = [
+    { id: 'homework', icon: BookOpen },
+    { id: 'calendar', icon: Calendar },
+    { id: 'chat', icon: MessageSquare },
+    { id: 'inbox', icon: Mail },
+    { id: 'journal', icon: Camera },
+    { id: 'alerts', icon: Bell },
+    { id: 'quizzes', icon: ClipboardList },
+    { id: 'games', icon: Gamepad2 },
+    { id: 'yearbook', icon: Image },
+    { id: 'library', icon: Library },
+    { id: 'directory', icon: Search },
+    { id: 'profile', icon: User },
+    { id: 'conduct', icon: FileText },
+    { id: 'privacy', icon: ShieldCheck },
+  ].map(feature => ({
+    ...feature,
+    label: t.features[feature.id as keyof typeof t.features],
+    tip: t.tips[feature.id as keyof typeof t.tips],
+  }));
+
+  const activeFeatureObj = activeFeature ? FEATURES.find(f => f.id === activeFeature) || null : null;
+
+  // Welcome dialogue text
+  const welcomeDialogue = `Welcome to Educater — the future of school management.\n\nStep into a smarter, seamless way to run your school. With just a tap, homework is deployed instantly. Parents stay informed. Students receive assignments in real time. Everything connected. Everything paperless.\n\nEmpower learning with a built-in library of self-study and tutoring resources. Create and send quizzes instantly to selected grades and subject groups. Capture attendance and generate absentee reports that notify parents immediately through push notifications.\n\nCelebrate the school journey by securely storing grade-specific memories — visible only to students and their parents. Build stronger communities with direct parent-teacher messaging and grade-based community chats.\n\nPlan smarter. Faculty can create calendar events for specific groups or publish to the entire school in seconds. Access a powerful online directory — your school’s digital “yellow pages” — where you can search by name, grade, parent, or student instantly.\n\nCreate and publish your code of conduct directly within the app. Clear. Accessible. Immediate.\n\nPrivate. Secure. Instant. Affordable.\nNo cost to the school. No paper. No limits.\n\nWelcome to Educater.\nWelcome to the future of school management.`;
+
 
   return (
     <div className="h-screen w-screen bg-[#011827] flex overflow-hidden cursor-none font-sans text-white">
       <CustomCursor />
+
+      {/* Voice Simulator for Welcome Dialogue */}
+      <VoiceSimulator text={welcomeDialogue} language={language} />
 
       {/* Sidebar */}
       <aside className="hidden sm:flex w-48 md:w-64 lg:w-72 h-full bg-[#021b2b] border-r border-white/5 flex-col p-4 md:p-8 z-50">
@@ -247,23 +251,23 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto no-scrollbar">
-          <h3 className="text-xl font-semibold text-white mb-8">Features</h3>
+          <h3 className="text-xl font-semibold text-white mb-8">{t.sidebar.featuresTitle}</h3>
           <nav className="space-y-1">
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
-              const isActive = activeFeature && activeFeature.id === feature.id;
+              const isActive = activeFeature === feature.id;
               return (
                 <button
                   key={feature.id}
-                  onClick={() => setActiveFeature(feature)}
+                  onClick={() => setActiveFeature(feature.id)}
                   className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group ${
                     isActive 
                       ? 'bg-white text-[#011827]' 
                       : 'text-white/50 hover:bg-white/10 hover:text-white'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-[#011827]' : 'text-white/40 group-hover:text-white'}`} />
-                  <span className="font-medium text-sm">{feature.label}</span>
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#011827]' : 'text-white/40 group-hover:text-white'}`} />
+                  <span className="font-medium text-sm text-left flex-1">{feature.label}</span>
                 </button>
               );
             })}
@@ -275,7 +279,7 @@ export default function App() {
             href={HOME_URL}
             className="flex items-center justify-between w-full px-4 py-4 text-white/50 hover:text-white transition-colors group border-t border-white/10"
           >
-            <span className="font-medium text-sm">Go back to website</span>
+            <span className="font-medium text-sm">{t.sidebar.goBackToWebsite}</span>
             <LogOut className="w-5 h-5 rotate-180" />
           </a>
         </div>
@@ -294,10 +298,10 @@ export default function App() {
         </div>
 
         {/* Tip Box */}
-        {activeFeature && (
+        {activeFeatureObj && (
           <AnimatePresence mode="wait">
             <motion.div 
-              key={activeFeature.id}
+              key={activeFeatureObj.id}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
@@ -305,7 +309,7 @@ export default function App() {
             >
               <span className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-white/50 font-bold mb-2 block">Tip:</span>
               <p className="text-[10px] md:text-[11px] text-white/70 leading-relaxed font-medium">
-                {activeFeature.tip}
+                {activeFeatureObj.tip}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -315,18 +319,26 @@ export default function App() {
         <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 xl:gap-24 ml-0 lg:ml-32">
           <PhoneFrame 
             delay={0.1} 
-            label="Educator"
+            label={t.labels.educator}
             url={PRINCIPALS_URL}
             icon={User}
           />
-          <PhoneFrame 
-            delay={0.2} 
-            label="Student"
-            url={STUDENTS_URL}
-            icon={GraduationCap}
-          />
+          <div className="hidden lg:block">
+            <PhoneFrame 
+              delay={0.2} 
+              label={t.labels.student}
+              url={STUDENTS_URL}
+              icon={GraduationCap}
+            />
+          </div>
         </div>
       </main>
+
+      {/* Language Selector */}
+      <LanguageSelector 
+        currentLanguage={language}
+        onLanguageChange={setLanguage}
+      />
     </div>
   );
 }
