@@ -240,7 +240,7 @@ export default function App() {
       <VoiceSimulator text={welcomeDialogue} language={language} />
 
       {/* Sidebar */}
-      <aside className="hidden sm:flex w-48 md:w-64 lg:w-72 h-full bg-[#021b2b] border-r border-white/5 flex-col p-4 md:p-8 z-50">
+      <aside className="hidden md:flex w-32 md:w-48 lg:w-64 h-full bg-[#021b2b] border-r border-white/5 flex-col p-2 md:p-4 z-50">
         <div className="mb-10">
           <img 
             src={LOGO_FULL_URL} 
@@ -286,7 +286,7 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 relative flex items-center justify-center p-12">
+      <main className="flex-1 relative flex items-center justify-center p-2 md:p-8 lg:p-12">
         {/* Top Right Logo Accent */}
         <div className="absolute top-12 right-12 opacity-90">
           <img 
@@ -316,14 +316,16 @@ export default function App() {
         )}
 
         {/* Phones Container */}
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 xl:gap-24 ml-0 lg:ml-32">
-          <PhoneFrame 
-            delay={0.1} 
-            label={t.labels.educator}
-            url={PRINCIPALS_URL}
-            icon={User}
-          />
-          <div className="hidden lg:block">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-8 lg:gap-12 xl:gap-16 ml-0 md:ml-8 lg:ml-32">
+          <div style={{ transform: 'scale(0.85)', width: '100%', maxWidth: 320 }} className="mx-auto">
+            <PhoneFrame 
+              delay={0.1} 
+              label={t.labels.educator}
+              url={PRINCIPALS_URL}
+              icon={User}
+            />
+          </div>
+          <div className="hidden lg:block" style={{ transform: 'scale(0.85)', maxWidth: 320 }}>
             <PhoneFrame 
               delay={0.2} 
               label={t.labels.student}
