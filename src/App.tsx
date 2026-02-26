@@ -27,7 +27,6 @@ import {
 } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { translations, type Language } from './translations';
-import VoiceSimulator from './VoiceSimulator';
 
 const HOME_URL = "https://www.educater.co.za";
 const PRINCIPALS_URL = "https://principals-app-five.vercel.app/";
@@ -93,9 +92,13 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
     }
   }, []);
 
-  // Padding as percentages (original Google AI dimensions)
-  const paddingX = "3.5%";
-  const paddingY = "8.5%";
+  // Fixed phone and iframe dimensions for locked aspect ratio
+  const PHONE_WIDTH = 390; // iPhone 13 width in px
+  const PHONE_HEIGHT = 844; // iPhone 13 height in px
+  const SCREEN_WIDTH = 320; // iPhone 13 screen width in px
+  const SCREEN_HEIGHT = 695; // iPhone 13 screen height in px
+  const SCREEN_TOP = 70; // px from top of phone image to screen
+  const SCREEN_LEFT = 35; // px from left of phone image to screen
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -103,44 +106,42 @@ const PhoneFrame = ({ delay = 0, label, url, icon: Icon }: { delay?: number, lab
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay, ease: "easeOut" }}
-        className="relative mx-auto origin-center simulation-container group/phone"
-        style={{ width: displayWidth, height: displayHeight, transform: 'translate(-6px, -16px)' }}
+        className="relative mx-auto origin-center simulation-container group/phone bg-black"
+        style={{ width: PHONE_WIDTH, height: PHONE_HEIGHT }}
       >
         <img 
           src={MOCKUP_URL} 
           alt="iPhone 13 Mockup" 
-          className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20"
           referrerPolicy="no-referrer"
         />
-        
         <div 
           className="absolute overflow-hidden bg-white rounded-[2rem]"
           style={{
-            top: paddingY,
-            left: paddingX,
-            right: paddingX,
-            bottom: paddingY,
+            top: SCREEN_TOP,
+            left: SCREEN_LEFT,
+            width: SCREEN_WIDTH,
+            height: SCREEN_HEIGHT,
             zIndex: 10,
-            pointerEvents: 'auto'
+            pointerEvents: 'auto',
+            boxShadow: '0 0 0 2px #e5e7eb',
           }}
         >
           <iframe 
             ref={iframeRef}
             src={url} 
             style={{
-              width: '150%',
-              height: '150%',
-              transform: 'scale(0.6666)',
-              transformOrigin: 'top left',
+              width: '100%',
+              height: '100%',
               border: 'none',
               cursor: 'none',
             }}
             title={`Educater App - ${label}`}
             referrerPolicy="no-referrer"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           />
         </div>
       </motion.div>
-      
       <div className="flex items-center gap-3 mt-1">
         <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
           <Icon className="w-4 h-4 text-emerald-400" />
@@ -228,19 +229,12 @@ export default function App() {
 
   const activeFeatureObj = activeFeature ? FEATURES.find(f => f.id === activeFeature) || null : null;
 
-  // Welcome dialogue text
-  const welcomeDialogue = `Welcome to Educater — the future of school management.\n\nStep into a smarter, seamless way to run your school. With just a tap, homework is deployed instantly. Parents stay informed. Students receive assignments in real time. Everything connected. Everything paperless.\n\nEmpower learning with a built-in library of self-study and tutoring resources. Create and send quizzes instantly to selected grades and subject groups. Capture attendance and generate absentee reports that notify parents immediately through push notifications.\n\nCelebrate the school journey by securely storing grade-specific memories — visible only to students and their parents. Build stronger communities with direct parent-teacher messaging and grade-based community chats.\n\nPlan smarter. Faculty can create calendar events for specific groups or publish to the entire school in seconds. Access a powerful online directory — your school’s digital “yellow pages” — where you can search by name, grade, parent, or student instantly.\n\nCreate and publish your code of conduct directly within the app. Clear. Accessible. Immediate.\n\nPrivate. Secure. Instant. Affordable.\nNo cost to the school. No paper. No limits.\n\nWelcome to Educater.\nWelcome to the future of school management.`;
-
-
   return (
     <div className="h-screen w-screen bg-[#011827] flex overflow-hidden cursor-none font-sans text-white">
       <CustomCursor />
 
-      {/* Voice Simulator for Welcome Dialogue */}
-      <VoiceSimulator text={welcomeDialogue} language={language} />
-
       {/* Sidebar */}
-      <aside className="hidden md:flex w-32 md:w-48 lg:w-64 h-full bg-[#021b2b] border-r border-white/5 flex-col p-2 md:p-4 z-50">
+      <aside className="hidden sm:flex w-48 md:w-64 lg:w-72 h-full bg-[#021b2b] border-r border-white/5 flex-col p-4 md:p-8 z-50">
         <div className="mb-10">
           <img 
             src={LOGO_FULL_URL} 
@@ -286,7 +280,7 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 relative flex items-center justify-center p-2 md:p-8 lg:p-12">
+      <main className="flex-1 relative flex items-center justify-center p-12">
         {/* Top Right Logo Accent */}
         <div className="absolute top-12 right-12 opacity-90">
           <img 
@@ -316,16 +310,14 @@ export default function App() {
         )}
 
         {/* Phones Container */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-8 lg:gap-12 xl:gap-16 ml-0 md:ml-8 lg:ml-32">
-          <div style={{ transform: 'scale(0.85)', width: '100%', maxWidth: 320 }} className="mx-auto">
-            <PhoneFrame 
-              delay={0.1} 
-              label={t.labels.educator}
-              url={PRINCIPALS_URL}
-              icon={User}
-            />
-          </div>
-          <div className="hidden lg:block" style={{ transform: 'scale(0.85)', maxWidth: 320 }}>
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 xl:gap-24 ml-0 lg:ml-32">
+          <PhoneFrame 
+            delay={0.1} 
+            label={t.labels.educator}
+            url={PRINCIPALS_URL}
+            icon={User}
+          />
+          <div className="hidden lg:block">
             <PhoneFrame 
               delay={0.2} 
               label={t.labels.student}
